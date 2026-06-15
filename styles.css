@@ -1,0 +1,57 @@
+:root{
+    --bg: #f7f9fc;
+    --card: #ffffff;
+    --accent: #6a5acd;
+    --muted: #6b7280;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    padding:24px;
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:#111827;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+}
+
+/* Page container centered with max width */
+.page{
+    width:100%;
+    max-width:900px;
+    background:var(--card);
+    padding:22px;
+    border-radius:10px;
+    box-shadow:0 8px 30px rgba(16,24,40,0.06);
+}
+
+h1,h2,h3,h4{color:var(--accent);text-align:center;margin:0 0 12px}
+
+.controls{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
+
+button{
+    background:var(--accent);
+    color:#fff;
+    border:0;
+    padding:10px 14px;
+    border-radius:8px;
+    font-size:15px;
+    cursor:pointer;
+    transition:transform .08s ease,box-shadow .12s ease;
+}
+button:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(106,90,205,0.12)}
+
+input,textarea,select{padding:8px 10px;border:1px solid #e6e9ef;border-radius:8px;font-size:14px}
+
+img{display:block;margin:14px auto;max-width:100%;height:auto;border-radius:8px}
+
+#joke{margin:18px auto;max-width:700px;font-size:18px;white-space:pre-line;color:#111}
+
+.note{color:var(--muted);font-size:13px;text-align:center;margin-top:8px}
+
+@media (max-width:480px){body{padding:12px}.page{padding:12px;border-radius:8px}button{width:100%}}
