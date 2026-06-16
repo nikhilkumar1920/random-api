@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Pokemon Arena Clash</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+html,body{
+height:100%;
+}
+
+body{
+background:
+radial-gradient(circle at top left,rgba(255,255,255,.18),transparent 28%),
+linear-gradient(135deg,#102a43 0%,#1e3c72 45%,#2f6ea8 100%);
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:24px;
+color:#0f172a;
+}
+
+.container{
+width:min(1040px,100%);
+background:rgba(255,255,255,.96);
+padding:24px;
+border-radius:22px;
+box-shadow:0 24px 60px rgba(15,23,42,.24);
+backdrop-filter:blur(8px);
+}
+
+h1{
+text-align:center;
+color:#0f4c81;
+margin-bottom:14px;
+font-size:clamp(2rem,4vw,3.2rem);
+}
+
+.header{
+background:linear-gradient(90deg,#dbeafe,#eff6ff);
+padding:12px 16px;
+text-align:center;
+font-size:clamp(1rem,2vw,1.25rem);
+font-weight:bold;
+border-radius:999px;
+margin-bottom:18px;
+color:#1e3a8a;
+}
+
+.battle{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:18px;
+border:1px solid #dbe4f0;
+border-radius:20px;
+padding:18px;
+background:linear-gradient(180deg,#f8fbff 0%,#eef6ff 100%);
+}
+
+.left{
+border:1px solid #d9e4ef;
+padding:18px;
+background:white;
+border-radius:18px;
+box-shadow:0 10px 26px rgba(15,23,42,.08);
+}
+
+.right{
+border:1px solid #d9e4ef;
+padding:18px;
+background:white;
+border-radius:18px;
+box-shadow:0 10px 26px rgba(15,23,42,.08);
+}
+
+.left h2,.right h2{
+font-size:clamp(1.4rem,2vw,1.8rem);
+margin-bottom:8px;
+text-align:center;
+}
+
+.left img{
+width:180px;
+display:block;
+margin:auto;
+min-height:180px;
+object-fit:contain;
+}
+
+.right img{
+width:220px;
+display:block;
+margin:auto;
+min-height:180px;
+object-fit:contain;
+}
+
+.tag{
+background:#dcfce7;
+color:#166534;
+padding:8px 12px;
+border-radius:999px;
+margin-top:12px;
+display:inline-block;
+font-weight:bold;
+}
+
+.tag2{
+background:#dbeafe;
+color:#1d4ed8;
+padding:8px 12px;
+border-radius:999px;
+margin-top:12px;
+display:inline-block;
+font-weight:bold;
+}
+
+.log{
+margin-top:18px;
+border:1px solid #d9e4ef;
+padding:16px;
+min-height:180px;
+overflow:auto;
+background:#0f172a;
+color:#e2e8f0;
+border-radius:18px;
+line-height:1.6;
+}
+
+.controls{
+text-align:center;
+margin-top:18px;
+}
+
+button{
+padding:14px 28px;
+font-size:1rem;
+font-weight:bold;
+border:0;
+border-radius:999px;
+background:linear-gradient(135deg,#2563eb,#0f766e);
+color:white;
+cursor:pointer;
+box-shadow:0 12px 24px rgba(37,99,235,.28);
+transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease;
+}
+
+button:hover:not(:disabled){
+transform:translateY(-1px);
+box-shadow:0 16px 28px rgba(37,99,235,.32);
+}
+
+button:disabled{
+opacity:.7;
+cursor:not-allowed;
+box-shadow:none;
+}
+
+@media (max-width:760px){
+.battle{
+grid-template-columns:1fr;
+}
+}
+
+@media (max-width:540px){
+body{
+padding:12px;
+}
+
+.container{
+padding:16px;
+border-radius:18px;
+}
+
+button{
+width:100%;
+}
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>⚔ Pokemon Arena Clash ⚔</h1>
+
+<div class="header">
+Player VS Computer
+</div>
+
+<div class="battle">
+
+<div class="left">
+
+<h2 id="p1name">
+Player
+</h2>
+
+<div class="tag" id="p1hp">
+HP : 0
+</div>
+
+<p id="p1type">
+Type
+</p>
+
+<img id="p1img">
+
+</div>
+
+<div class="right">
+
+<h2 id="p2name">
+Computer
+</h2>
+
+<div class="tag2" id="p2hp">
+HP : 0
+</div>
+
+<p id="p2type">
+Type
+</p>
+
+<img id="p2img">
+
+</div>
+
+</div>
+
+<div class="log" id="log">
+
+Click Start Battle
+
+</div>
+
+<div class="controls">
+
+<button id="battleButton" onclick="battle()">
+
+Start Battle
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+async function getPokemon(id){
+
+let res=await fetch(
+"https://pokeapi.co/api/v2/pokemon/"+id
+);
+
+return await res.json();
+
+}
+
+async function battle(){
+
+let battleButton=document.getElementById("battleButton");
+let log=document.getElementById("log");
+
+battleButton.disabled=true;
+log.innerHTML=
+
+"Loading Pokemon...";
+
+try{
+
+let a=Math.floor(Math.random()*151)+1;
+let b=Math.floor(Math.random()*151)+1;
+
+while(a==b){
+
+b=Math.floor(Math.random()*151)+1;
+
+}
+
+let p1=await getPokemon(a);
+let p2=await getPokemon(b);
+
+document.getElementById("p1name").innerHTML=
+
+p1.name.toUpperCase();
+
+document.getElementById("p2name").innerHTML=
+
+p2.name.toUpperCase();
+
+document.getElementById("p1img").src=
+
+p1.sprites.front_default;
+
+document.getElementById("p1img").alt=
+
+p1.name+" front sprite";
+
+document.getElementById("p2img").src=
+
+p2.sprites.front_default;
+
+document.getElementById("p2img").alt=
+
+p2.name+" front sprite";
+
+let hp1=p1.stats[0].base_stat;
+let hp2=p2.stats[0].base_stat;
+
+let attack1=p1.stats[1].base_stat;
+let attack2=p2.stats[1].base_stat;
+
+let speed1=p1.stats[5].base_stat;
+let speed2=p2.stats[5].base_stat;
+
+let type1=p1.types[0].type.name;
+let type2=p2.types[0].type.name;
+
+document.getElementById("p1hp").innerHTML=
+
+"HP : "+hp1;
+
+document.getElementById("p2hp").innerHTML=
+
+"HP : "+hp2;
+
+document.getElementById("p1type").innerHTML=
+
+"Type : "+type1.toUpperCase();
+
+document.getElementById("p2type").innerHTML=
+
+"Type : "+type2.toUpperCase();
+
+let score1=
+
+hp1+attack1*2+speed1;
+
+let score2=
+
+hp2+attack2*2+speed2;
+
+let winner="";
+if(score1>score2){
+
+winner=p1.name.toUpperCase();
+
+}
+else if(score2>score1){
+
+winner=p2.name.toUpperCase();
+
+}
+else{
+
+winner="DRAW";
+
+}
+
+let attackMessage="";
+
+if(score1>score2){
+
+attackMessage=
+p1.name.toUpperCase()+
+" attacked with great power and defeated "+
+p2.name.toUpperCase();
+
+}
+else if(score2>score1){
+
+attackMessage=
+p2.name.toUpperCase()+
+" attacked with great power and defeated "+
+p1.name.toUpperCase();
+
+}
+else{
+
+attackMessage=
+"Both Pokemon fought equally hard.";
+
+}
+
+log.innerHTML=
+
+"⚔ POKEMON ARENA ⚔"
+
++"<br><br>"
+
++"👤 PLAYER"
+
++"<br>"
+
++p1.name.toUpperCase()
+
++"<br>"
+
++"❤️ HP : "+hp1
+
++"<br>"
+
++"⚡ ATTACK : "+attack1
+
++"<br>"
+
++"🏃 SPEED : "+speed1
+
++"<br>"
+
++"🌟 TYPE : "+type1.toUpperCase()
+
++"<br><br>"
+
++"🤖 COMPUTER"
+
++"<br>"
+
++p2.name.toUpperCase()
+
++"<br>"
+
++"❤️ HP : "+hp2
+
++"<br>"
+
++"⚡ ATTACK : "+attack2
+
++"<br>"
+
++"🏃 SPEED : "+speed2
+
++"<br>"
+
++"🌟 TYPE : "+type2.toUpperCase()
+
++"<br><br>"
+
++"💥 "+attackMessage
+
++"<br><br>"
+
++"🏆 WINNER : "
+
++"<b>"+winner+"</b>";
+
+}catch(error){
+
+log.innerHTML=
+
+"Unable to load Pokemon right now. Please try again.";
+
+}finally{
+
+battleButton.disabled=false;
+
+}
+
+}
+
+battle();
+
+</script>
+
+</body>
+</html>
